@@ -33,7 +33,6 @@ def count_non_zero(array):
 	return count
 
 def del_zeros(array):
-	# print(array)
 	for i in range (0, array.size):
 		if array[i] == 0:
 			np.delete(array, i)
@@ -51,12 +50,10 @@ def get_percentile(data, perc):
 	return data[rank_int] + rank_frac * (data[rank_int + 1] - data[rank_int])
 
 try:
-	open_file(sys.argv[1])
+	data_str = open_file(sys.argv[1])
 except IndexError:
 	print("Usage: describe.py filename")
 	sys.exit(1)
-
-data_str = open_file(sys.argv[1])
 
 data_str[data_str==''] = '0'
 
