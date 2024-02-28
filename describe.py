@@ -38,13 +38,17 @@ def del_zeros(array):
 		if array[i] == 0:
 			np.delete(array, i)
 
-def get_percentile(sorted_array, perc):
-	size = sorted_array.size
+def get_percentile(data, perc):
+	size = data.size
 	if perc < 0:
-		return sorted_array[0]
+		return data[0]
 	if perc >= 100:
-		return sorted_array[size - 1]
-	return sorted_array[math.floor(size * perc / 100)]
+		return data[size - 1]
+	rank = perc / 100 * (size - 1)
+	rank_int = math.floor(rank)
+	rank_frac = rank - rank_int
+	print("frac = ", rank_frac)
+	return data[rank_int] + rank_frac * (data[rank_int + 1] - data[rank_int])
 
 try:
 	open_file(sys.argv[1])
@@ -57,12 +61,6 @@ data_str = open_file(sys.argv[1])
 data_str[data_str==''] = '0'
 
 data_float = np.array(data_str[6:, 1:], float)
-# data_float[data_float==0] = None
-
-
-# print(data_str)
-# print(data_float)
-
 
 stats = np.empty((13, 9), float)
 
