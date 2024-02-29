@@ -64,7 +64,6 @@ hufflepuff = np.array(hufflepuff[6:], float)
 ravenclaw = np.array(ravenclaw[6:], float)
 slytherin = np.array(slytherin[6:], float)
 
-print(gryffindor[0].size)
 
 # gryffindor = np.delete(gryffindor, np.where(gryffindor == 0))
 
@@ -80,7 +79,6 @@ fig.delaxes(axs[3][1])
 fig.delaxes(axs[3][2])
 fig.delaxes(axs[3][3])
 
-print(data_str[0][6])
 
 for i in range (0, 13):
 	axs[i // 4][i % 4].set_title(data_str[0][i + 6])
