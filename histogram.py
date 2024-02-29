@@ -6,9 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def del_zeros(array):
-	for i in range (0, array.size):
-		if array[i] == 0:
-			np.delete(array, i)
+	array = [i for i in	array if i != 0]
+	return array
 
 def open_file(file):
 	file_array = []
@@ -20,8 +19,31 @@ def open_file(file):
 	except (FileNotFoundError, PermissionError) as ve:
 		print("File not found or invalid permissions")
 		sys.exit(1)
-	data_array = np.array(file_array)
-	return np.transpose(data_array)
+	return file_array
+
+def sort_houses(data):
+	gryffindor = []
+	hufflepuff = []
+	ravenclaw = []
+	slytherin = []
+
+	for row in data:
+		match row[1]:
+			case "Gryffindor":
+				gryffindor.append(row)
+			case "Hufflepuff":
+				hufflepuff.append(row)
+			case "Ravenclaw":
+				ravenclaw.append(row)
+			case "Slytherin":
+				slytherin.append(row)
+
+	gryffindor = np.transpose(gryffindor)
+	hufflepuff = np.transpose(hufflepuff)
+	ravenclaw = np.transpose(ravenclaw)
+	slytherin = np.transpose(slytherin)
+
+	return gryffindor, hufflepuff, ravenclaw, slytherin
 
 try:
 	data_str = open_file(sys.argv[1])
@@ -29,20 +51,44 @@ except IndexError:
 	print("Usage: describe.py filename")
 	sys.exit(1)
 
-data_str[data_str=='Gryffindor'] = '1'
-data_str[data_str=='Slytherin'] = '2'
-data_str[data_str=='Ravenclaw'] = '3'
-data_str[data_str=='Hufflepuff'] = '4'
-data_str[data_str==''] = '0'
+			
+gryffindor, hufflepuff, ravenclaw, slytherin = sort_houses(data_str)
 
-data = np.array(data_str[6:, 1:], float)
-print(data[12])
-for row in data:
-	del_zeros(row)
+gryffindor[gryffindor == ''] = '0'
+hufflepuff[hufflepuff == ''] = '0'
+ravenclaw[ravenclaw == ''] = '0'
+slytherin[slytherin == ''] = '0'
 
-fig, axs = plt.subplots(4,4)
-axs[0][0].hist(data[0], 16)
+gryffindor = np.array(gryffindor[6:], float)
+hufflepuff = np.array(hufflepuff[6:], float)
+ravenclaw = np.array(ravenclaw[6:], float)
+slytherin = np.array(slytherin[6:], float)
+
+print(gryffindor[0].size)
+
+# gryffindor = np.delete(gryffindor, np.where(gryffindor == 0))
+
+gryffindor[gryffindor == 0] = None
+hufflepuff[hufflepuff == 0] = None
+ravenclaw[ravenclaw == 0] = None
+slytherin[slytherin == 0] = None
+
+
+fig, axs = plt.subplots(4,4, figsize=(15, 15))
+
 fig.delaxes(axs[3][1])
 fig.delaxes(axs[3][2])
 fig.delaxes(axs[3][3])
+
+print(data_str[0][6])
+
+for i in range (0, 13):
+	axs[i // 4][i % 4].set_title(data_str[0][i + 6])
+	axs[i // 4][i % 4].hist(gryffindor[i], 16, alpha = 0.6, fc=(0.8, 0, 0, 0.4))
+	axs[i // 4][i % 4].hist(hufflepuff[i], 16, alpha = 0.6, fc=(0.4, 0.4, 0, 0.4))
+	axs[i // 4][i % 4].hist(ravenclaw[i], 16, alpha = 0.6, fc=(0, 0, 0.8, 0.4))
+	axs[i // 4][i % 4].hist(slytherin[i], 16, alpha = 0.6, fc=(0, 0.8, 0, 0.4))
+	axs[i // 4][i % 4].set_xticklabels([])
+	axs[i // 4][i % 4].set_yticklabels([])
+
 plt.show()
