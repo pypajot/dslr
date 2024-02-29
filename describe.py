@@ -46,7 +46,6 @@ def get_percentile(data, perc):
 	rank = perc / 100 * (size - 1)
 	rank_int = math.floor(rank)
 	rank_frac = rank - rank_int
-	print("frac = ", rank_frac)
 	return data[rank_int] + rank_frac * (data[rank_int + 1] - data[rank_int])
 
 try:
