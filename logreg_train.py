@@ -1,72 +1,44 @@
 #!/usr/bin/env python3
 
-import sys
-import csv
 import numpy as np
-
-def open_file(file):
-	file_array = []
-	try:
-		with open(file, 'r') as f:
-			reader = csv.reader(f)
-			for row in reader:
-				file_array.append(row)
-	except (FileNotFoundError, PermissionError) as ve:
-		print("File not found or invalid permissions")
-		sys.exit(1)
-	data_array = np.array(file_array)
-	return np.transpose(data_array)
-
-def	normalize_data(data):
-	for row in data:
-		# print(abs(max(row, key=abs)))
-		row /= abs(max(row, key=abs))
+from utils import preproc, sigmoid
 
 try:
-	data_str = open_file(sys.argv[1])
-except IndexError:
-	print("Usage: describe.py filename")
-	sys.exit(1)
-
-data_str[data_str == ''] = '0'
-
-data_float = np.array(data_str[6:, 1:], float)
-
-# data_float[data_float == 0] = None
-
-data_students = np.transpose(data_float)
-normalize_data(data_float)
-data_houses = data_str[1, 1:]
-
-# print(data_students[0])
-# print(data_houses)
-
-# print(data_float)
-
+	file = open("thetas.csv", 'w')
+except PermissionError as ve:
+	print("Theta file not writable")
+	exit(1)
 
 learning_rate = 0.001
 epochs = 100000
 
-def sigmoid(x):
-	return 1 / (1 + np.exp(-x))
+train_grades, train_houses, predict = preproc()
 
-houses_onevall = np.where(data_houses == 'Hufflepuff', 1, 0)
-print(sum(houses_onevall))
-thetas = np.zeros(data_students[0].shape)
-# print(thetas)
-for i in range (0, epochs):
-	data_theta = data_students.dot(thetas)
-	# print(data_theta)
-	# print(data_houses)
-	# print(houses_onevall)
-	thetas -= learning_rate / data_students[0].size * np.dot(data_theta - houses_onevall, data_students)
+houses = [
+	'Gryffindor',
+	'Slytherin',
+	'Ravenclaw',
+	'Hufflepuff'
+]
 
-# print(thetas)
-score = 0
-result = sigmoid(np.dot(data_students, thetas))
-for i in result:
-	if i > 0.60:
-		score += 1
+file.write("House")
+for i in range (0, train_grades[0].size):
+	file.write(',theta' + str(i))
+file.write('\n')
+
+for house in houses:
+
+	houses_onevall = np.where(train_houses == house, 1, 0)
+	thetas = np.zeros(train_grades[0].shape)
+
+	for i in range (0, epochs):
+		data_theta = np.dot(train_grades, thetas)
+		thetas -= learning_rate / train_grades[0].size * np.dot(data_theta - houses_onevall, train_grades)
+	
+	file.write(house)
+	for theta in thetas:
+		file.write(',' + str(theta))
+	file.write('\n')
 
 
-print(score)
+

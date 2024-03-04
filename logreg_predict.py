@@ -1,16 +1,36 @@
 #!/usr/bin/env python3
 
-normalise_values = [104956.0,
-1016.2119403873959,
-11.612895082210851,
-10.16211940387396,
-10.032,
-1092.3886105728684,
-745.3962198761234,
-11.889712754042707,
-1098.9582005409077,
-13.536762124994421,
-3.313675764124477,
-261.04892,
-279.07]
-thetas = [ 0.0978018, 0.00475714, -0.49562561, -0.00422567,  0.21253794,  0.03090434, 0.03061237,  0.02336539, -0.02332083, -0.16428359, -0.01468779, -0.17155785, 0.68677321]
+import sys
+import csv
+import numpy as np
+from utils import preproc, sigmoid
+
+try:
+	file = open('houses.csv', 'w')
+except PermissionError as ve:
+	print('Houses.csv has wrong permissions')
+	sys.exit(1)
+
+try:
+	thetas_file = []
+	f = open('thetas.csv', 'r')
+	reader = csv.reader(f)
+	for row in reader:
+		thetas_file.append(row)
+except (FileNotFoundError, PermissionError) as ve:
+	print("Theta file not found or invalid permissions")
+	sys.exit(1)
+
+file.write("Index,Hogwarts House\n")
+
+train, house_train, predict = preproc()
+thetas_str = np.array(thetas_file)
+houses = thetas_str.T[0, 1:]
+thetas = np.array(thetas_str[1:, 1:], float)
+index = 0
+for row in predict:
+	values = sigmoid(np.dot(row, thetas.T))
+	file.write(str(index) + ',' + houses[np.where(values == max(values))[0][0]] + '\n')
+	index += 1
+
+
