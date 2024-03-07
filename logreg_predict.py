@@ -24,6 +24,7 @@ except (FileNotFoundError, PermissionError) as ve:
 file.write("Index,Hogwarts House\n")
 
 train, house_train, predict = preproc()
+predict = np.insert(predict, 0, 1, 1)
 thetas_str = np.array(thetas_file)
 houses = thetas_str.T[0, 1:]
 thetas = np.array(thetas_str[1:, 1:], float)
