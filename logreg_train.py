@@ -1,9 +1,21 @@
 #!/usr/bin/env python3
 
+import argparse
 import numpy as np
 import random
 import sys
 from utils import preproc
+
+
+parser = argparse.ArgumentParser(description = 'train a logistic model on data')
+parser.add_argument('-e', '--epochs', type = int, default = 3000)
+parser.add_argument('-l', '--learning-rate', type = float, default = 0.01)
+opti = parser.add_mutually_exclusive_group()
+opti.add_argument('-s', '--stochastic', action = 'store_true')
+opti.add_argument('-mb', '--mini-batch', type = int, default = 10)
+opti.add_argument('-b', '--batch', action = 'store_true', default = True)
+
+args = parser.parse_args()
 
 try:
 	file = open("thetas.csv", 'w')
@@ -13,17 +25,14 @@ except PermissionError as ve:
 
 train_grades, train_houses, predict = preproc()
 
-learning_rate = 0.01
-epochs = 1000
-batch_size = train_houses.size
-# print(train_houses.size)
-
-if len(sys.argv) > 1:
-	match sys.argv[1]:
-		case '--stochastic':
-			batch_size = 1
-		case '--minibatch':
-			batch_size = 10
+epochs = args.epochs
+learning_rate = args.learning_rate
+if args.batch:
+	batch_size = train_houses.size
+elif args.stochastic:
+	batch_size = 1
+else:
+	batch_size = args.mini_batch
 
 houses = [
 	'Gryffindor',
@@ -46,11 +55,8 @@ for house in houses:
 
 	for i in range (0, epochs):
 		n = random.sample(range(0, train_houses.size), batch_size)
-		# print(n)
 		batch_grade = train_grades[n]
-		# print(batch_grade)
 		batch_grade = np.insert(batch_grade, 0, 1, 1)
-		# print(batch_grade)
 		batch_house = houses_onevall[n]
 		data_theta = np.dot(batch_grade, thetas)
 		thetas -= learning_rate / data_theta.size * np.dot(data_theta - batch_house, batch_grade)
