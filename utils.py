@@ -33,9 +33,9 @@ def	normalize(train, predict):
 def preproc():
 	data_train, houses = open_file('dataset_train.csv')
 	data_predict, empty = open_file('dataset_train.csv')
-	features = [1, 2, 3, 6, 11, 12]
-	data_train = data_train[features]
-	data_predict = data_predict[features]
+	# features = [1, 2, 3, 5, 6, 11, 12]
+	# data_train = data_train[features]
+	# data_predict = data_predict[features]
 	normalize(data_train, data_predict)
 	return np.transpose(data_train), houses, np.transpose(data_predict)
 
